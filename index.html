@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#7a1f33">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Calculateur à pâté</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@500;700&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef1ec;--card:#fbfcfa;--ink:#1e2420;--mute:#5d675f;--line:#c9d0c6;--wine:#7a1f33;--onwine:#fff;--pine:#2f4a3c;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141a16;--card:#1d2520;--ink:#e8ede6;--mute:#9aa69c;--line:#35403a;--wine:#d5546f;--onwine:#17100f;--pine:#8fb59f}}
+:root[data-theme="dark"]{--bg:#141a16;--card:#1d2520;--ink:#e8ede6;--mute:#9aa69c;--line:#35403a;--wine:#d5546f;--onwine:#17100f;--pine:#8fb59f}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.4 "Alegreya Sans",system-ui,sans-serif;padding-bottom:84px;min-height:100vh}
+main{max-width:560px;margin:0 auto;padding:18px 16px}
+h1,h2{font-family:Alegreya,Georgia,serif;margin:0}
+h1{font-size:30px;line-height:1.1;margin-bottom:4px}
+.sub{color:var(--mute);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:14px;overflow:hidden}
+.card.off{opacity:.62}
+.head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px}
+.head h2{font-size:22px}
+.sw{position:relative;width:52px;height:30px;flex:none}
+.sw input{position:absolute;inset:0;opacity:0;margin:0;width:100%;height:100%;cursor:pointer}
+.sw span{position:absolute;inset:0;border-radius:15px;background:var(--line);transition:background .15s}
+.sw span::after{content:"";position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;background:var(--card);transition:transform .15s}
+.sw input:checked+span{background:var(--wine)}
+.sw input:checked+span::after{transform:translateX(22px)}
+.sw input:focus-visible+span{outline:3px solid var(--pine);outline-offset:2px}
+.body{padding:0 16px 14px}
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:12px}
+.seg button{border:0;background:none;color:var(--ink);font:inherit;padding:10px 6px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--pine);color:var(--card);font-weight:700}
+label.f{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+label.f span{flex:1}
+.f input{width:120px;font:inherit;font-size:20px;font-weight:700;text-align:right;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.f em{font-style:normal;color:var(--mute);width:22px}
+details{border-top:1px solid var(--line);margin-top:6px;padding-top:8px}
+summary{cursor:pointer;color:var(--pine);font-weight:700;padding:4px 0}
+table{width:100%;border-collapse:collapse;margin-top:6px}
+td{padding:5px 0;border-bottom:1px dashed var(--line)}
+td:last-child{text-align:right;font-weight:500;white-space:nowrap}
+.tot td{border:0;font-weight:700;color:var(--wine)}
+.group{font-family:Alegreya,serif;font-size:19px;margin:20px 0 6px;color:var(--pine)}
+.item{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer}
+.item input{width:22px;height:22px;accent-color:var(--wine);flex:none}
+.item .n{flex:1}.item .q{font-weight:700;text-align:right}
+.item.done{opacity:.5}.item.done .n{text-decoration:line-through}
+.empty{padding:28px 8px;text-align:center;color:var(--mute)}
+.acts{display:flex;gap:10px;margin-top:16px}
+.btn{flex:1;font:inherit;font-weight:700;padding:13px;border-radius:12px;border:1px solid var(--wine);background:var(--wine);color:var(--onwine);cursor:pointer}
+.btn.alt{background:none;color:var(--wine)}
+.note{font-size:14px;color:var(--mute);margin-top:16px}
+nav{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1fr;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{border:0;background:none;font:inherit;font-weight:700;color:var(--mute);padding:16px 8px;cursor:pointer}
+nav button[aria-selected="true"]{color:var(--wine);box-shadow:inset 0 3px 0 var(--wine)}
+button:focus-visible{outline:3px solid var(--pine);outline-offset:-3px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+<section id="v-rec">
+<h1>Calculateur à pâté</h1>
+<p class="sub">Choisissez vos recettes, la liste de courses se calcule seule.</p>
+<div id="cards"></div>
+<p class="note">Œuf : 55 g pièce. Tasse de lait : 20 cl. Œufs et lait sont arrondis au kilo de viande, comme dans votre tableur.</p>
+</section>
+<section id="v-list" hidden>
+<h1>Liste de courses</h1>
+<p class="sub" id="lsub"></p>
+<div id="list"></div>
+<div class="acts"><button class="btn" id="share">Partager</button><button class="btn alt" id="reset">Tout décocher</button></div>
+</section>
+</main>
+<nav role="tablist">
+<button role="tab" id="t-rec" aria-selected="true">Recettes</button>
+<button role="tab" id="t-list" aria-selected="false">Liste de courses</button>
+</nav>
+<script>
+// Recettes tirées du classeur. g = grammes pour la recette initiale.
+var RECETTES = {
+  campagne:{nom:"Pâté de campagne",ancre:"foie",
+    viandes:[["gorge","Gras de gorge",300],["poitrine","Poitrine",200],["foie","Foie",350],["echine","Échine (ou gibier)",150]],
+    sel:{demande:20,poids:18},cond:[["poivre","Poivre blanc",4],["muscade","Noix de muscade",1]],oeuf:1,armagnac:1,lait:0.5},
+  reserve:{nom:"Pâté « réserve spéciale »",ancre:"foiegras",
+    viandes:[["gorge","Gras de gorge",450],["foiegras","Foie gras",500],["magret","Magret",200]],
+    sel:{demande:18,poids:18},cond:[["poivre","Poivre blanc",3],["muscade","Noix de muscade",1]],oeuf:1,armagnac:1,lait:0.5},
+  saucisson:{nom:"Saucisson",ancre:"epaule",
+    viandes:[["gorge","Gras de gorge",200],["poitrine","Poitrine",210],["epaule","Épaule",570]],
+    sel:{demande:20,poids:20},cond:[["poivre","Poivre blanc",3],["sucre","Sucre",5]],
+    ratios:{gorge:0.35,poitrine:0.37},parts:{gorge:0.20,poitrine:0.21,epaule:0.57}}
+};
+var NOMS = {epaule:"Épaule",gorge:"Gras de gorge",poitrine:"Poitrine",foie:"Foie",echine:"Échine (ou gibier)",foiegras:"Foie gras",magret:"Magret",
+  sel:"Sel",poivre:"Poivre blanc",muscade:"Noix de muscade",sucre:"Sucre",oeuf:"Œufs",armagnac:"Armagnac",lait:"Lait"};
+var VIANDES = ["epaule","gorge","poitrine","foie","echine","foiegras","magret"];
+var AUTRES = ["sel","poivre","muscade","sucre","oeuf","armagnac","lait"];
+var etat = {
+  r:{campagne:{on:true,mode:"demande",v:350},reserve:{on:false,mode:"demande",v:500},saucisson:{on:false,mode:"demande",v:570}},
+  coche:{}
+};
+try{var s=localStorage.getItem("pate-etat");if(s){var o=JSON.parse(s);if(o&&o.r)etat=o;}}catch(e){}
+function sauve(){try{localStorage.setItem("pate-etat",JSON.stringify(etat));}catch(e){}}
+
+function calcule(cle){
+  var R=RECETTES[cle],e=etat.r[cle],v=Number(e.v)||0,m={},i;
+  var base=R.viandes.reduce(function(a,x){return a+x[2];},0);
+  var ancre=R.viandes.filter(function(x){return x[0]===R.ancre;})[0][2];
+  R.viandes.forEach(function(x){
+    var id=x[0],g;
+    if(e.mode==="poids"){g=R.parts?v*R.parts[id]:v*x[2]/base;}
+    else if(id===R.ancre){g=v;}
+    else{g=R.ratios?v*R.ratios[id]:v*x[2]/ancre;}
+    m[id]=g;
+  });
+  var tot=0;for(i in m)tot+=m[i];
+  var kg=tot/1000,x={};
+  x.sel=R.sel[e.mode]*kg;
+  R.cond.forEach(function(c){x[c[0]]=c[2]*kg;});
+  if(R.oeuf){x.oeuf=Math.round(kg)*R.oeuf;x.armagnac=R.armagnac*kg;x.lait=Math.round(kg)*R.lait;}
+  return {m:m,x:x,tot:tot};
+}
+function nb(n,d){return n.toLocaleString("fr-FR",{maximumFractionDigits:d===undefined?0:d});}
+function poids(g){return g>=1000?nb(g/1000,2)+" kg":nb(g)+" g";}
+function qte(id,n){
+  if(id==="oeuf")return nb(n)+(n>1?" œufs":" œuf");
+  if(id==="armagnac")return nb(n,1)+" c. à soupe";
+  if(id==="lait")return nb(n,1)+(n>1?" tasses":" tasse")+" ("+nb(n*20)+" cl)";
+  if(id==="sel"||id==="poivre"||id==="muscade"||id==="sucre")return nb(n,1)+" g";
+  return poids(n);
+}
+function ligne(id,n){return "<tr><td>"+NOMS[id]+"</td><td>"+qte(id,n)+"</td></tr>";}
+
+function bati(){
+  var h="";
+  Object.keys(RECETTES).forEach(function(k){
+    var R=RECETTES[k];
+    h+='<article class="card" id="c-'+k+'"><div class="head"><h2>'+R.nom+'</h2><label class="sw"><input type="checkbox" data-on="'+k+'" aria-label="Inclure '+R.nom+'"><span></span></label></div>'
+     +'<div class="body"><div class="seg"><button data-m="demande" data-k="'+k+'">Un ingrédient fixé</button><button data-m="poids" data-k="'+k+'">Poids total fixé</button></div>'
+     +'<label class="f"><span id="l-'+k+'"></span><input type="number" inputmode="decimal" min="0" step="10" data-v="'+k+'"><em>g</em></label>'
+     +'<details><summary>Détail des quantités</summary><table id="d-'+k+'"></table></details></div></article>';
+  });
+  document.getElementById("cards").innerHTML=h;
+}
+function maj(){
+  var agg={},nb_=0;
+  Object.keys(RECETTES).forEach(function(k){
+    var R=RECETTES[k],e=etat.r[k],c=calcule(k),card=document.getElementById("c-"+k);
+    card.classList.toggle("off",!e.on);
+    card.querySelector("[data-on]").checked=e.on;
+    card.querySelectorAll("[data-m]").forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.m===e.mode));});
+    var nomAncre=R.viandes.filter(function(x){return x[0]===R.ancre;})[0][1];
+    document.getElementById("l-"+k).textContent=e.mode==="poids"?"Poids total de viande":"Quantité de "+nomAncre.toLowerCase();
+    var inp=card.querySelector("[data-v]");if(document.activeElement!==inp)inp.value=e.v;
+    var d="";R.viandes.forEach(function(x){d+=ligne(x[0],c.m[x[0]]);});
+    d+='<tr class="tot"><td>Viande au total</td><td>'+poids(c.tot)+"</td></tr>";
+    ["sel"].concat(R.cond.map(function(z){return z[0];}),R.oeuf?["oeuf","armagnac","lait"]:[]).forEach(function(id){d+=ligne(id,c.x[id]);});
+    document.getElementById("d-"+k).innerHTML=d;
+    if(e.on){nb_++;
+      for(var id in c.m)agg[id]=(agg[id]||0)+c.m[id];
+      for(var id2 in c.x)agg[id2]=(agg[id2]||0)+c.x[id2];}
+  });
+  var tot=0;VIANDES.forEach(function(i){tot+=agg[i]||0;});
+  var h="";
+  function groupe(titre,ids){
+    var l=ids.filter(function(i){return agg[i]>0;});
+    if(!l.length)return;
+    h+='<div class="group">'+titre+"</div>";
+    l.forEach(function(i){var c=etat.coche[i];
+      h+='<label class="item'+(c?" done":"")+'"><input type="checkbox" data-c="'+i+'"'+(c?" checked":"")+'><span class="n">'+NOMS[i]+'</span><span class="q">'+qte(i,agg[i])+"</span></label>";});
+  }
+  groupe("Viandes",VIANDES);groupe("Assaisonnement et autres",AUTRES);
+  document.getElementById("list").innerHTML=h||'<p class="empty">Aucune recette choisie. Activez une recette dans l’onglet Recettes.</p>';
+  document.getElementById("lsub").textContent=nb_?nb_+(nb_>1?" recettes":" recette")+" · "+poids(tot)+" de viande":"";
+  window._agg=agg;
+}
+function texte(){
+  var t="Liste de courses\n";
+  VIANDES.concat(AUTRES).forEach(function(i){if(window._agg[i]>0)t+="- "+NOMS[i]+" : "+qte(i,window._agg[i])+"\n";});
+  return t;
+}
+document.addEventListener("click",function(ev){
+  var b=ev.target.closest("[data-m]");
+  if(b){var k=b.dataset.k,e=etat.r[k],R=RECETTES[k];e.mode=b.dataset.m;
+    var tot=R.viandes.reduce(function(a,x){return a+x[2];},0);
+    var a=R.viandes.filter(function(x){return x[0]===R.ancre;})[0][2];
+    e.v=e.mode==="poids"?(R.parts?3000:tot*3):a;sauve();maj();}
+});
+document.addEventListener("change",function(ev){
+  var t=ev.target;
+  if(t.dataset.on){etat.r[t.dataset.on].on=t.checked;}
+  else if(t.dataset.c){etat.coche[t.dataset.c]=t.checked;}
+  else return;
+  sauve();maj();
+});
+document.addEventListener("input",function(ev){
+  var t=ev.target;if(t.dataset.v){etat.r[t.dataset.v].v=t.value;sauve();maj();}
+});
+function onglet(l){
+  document.getElementById("v-rec").hidden=l;document.getElementById("v-list").hidden=!l;
+  document.getElementById("t-rec").setAttribute("aria-selected",String(!l));
+  document.getElementById("t-list").setAttribute("aria-selected",String(l));
+  window.scrollTo(0,0);
+}
+document.getElementById("t-rec").onclick=function(){onglet(false);};
+document.getElementById("t-list").onclick=function(){onglet(true);};
+document.getElementById("reset").onclick=function(){etat.coche={};sauve();maj();};
+document.getElementById("share").onclick=function(){
+  var t=texte();
+  if(navigator.share){navigator.share({text:t}).catch(function(){});return;}
+  try{navigator.clipboard.writeText(t).then(function(){alert("Liste copiée.");},function(){alert(t);});}catch(e){alert(t);}
+};
+bati();maj();
+if("serviceWorker" in navigator){window.addEventListener("load",function(){try{navigator.serviceWorker.register("sw.js").catch(function(){});}catch(e){}});}
+</script>
+</body>
+</html>
