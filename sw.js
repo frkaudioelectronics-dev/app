@@ -1,6 +1,6 @@
 // Service worker : réseau d'abord (mises à jour immédiates), cache en secours hors ligne.
-var CACHE = "pate-v1";
-var FICHIERS = ["./", "index.html", "manifest.json", "icon-192.png", "icon-512.png"];
+var CACHE = "pate-v2";
+var FICHIERS = ["./", "index.html", "manifest.json", "icon-192.png", "icon-512.png", "icon-maskable-512.png"];
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(FICHIERS); }));
   self.skipWaiting();
